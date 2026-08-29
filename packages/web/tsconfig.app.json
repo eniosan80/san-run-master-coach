@@ -17,7 +17,7 @@
 		"moduleDetection": "force",
 		"noEmit": true,
 		"jsx": "react-jsx",
-		/* Linting */
+		"types": ["node", "bun"],
 		"strict": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
@@ -30,6 +30,6 @@
 		}
 	},
 	"include": [
-		"src/web"
+		"src/"
 	]
 }

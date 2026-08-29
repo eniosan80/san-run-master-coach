@@ -1,0 +1,18 @@
+warning: in the working copy of 'packages/web/drizzle.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'packages/web/src/api/database/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'packages/web/src/api/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'packages/web/src/web/lib/forca-data.ts', LF will be replaced by CRLF the next time Git touches it
+ package.json                                  |   2 [32m+[m[31m-[m
+ packages/web/drizzle.config.ts                |   9 [32m+[m[31m-[m
+ packages/web/src/api/database/index.ts        |   6 [32m+[m[31m-[m
+ packages/web/src/api/database/schema.ts       | 133 [32m+++[m[31m-[m
+ packages/web/src/api/index.ts                 | 490 [32m++++++++++[m[31m----[m
+ packages/web/src/api/lib/classify.ts          | 882 [32m+++++++++++++++++++++[m[31m-----[m
+ packages/web/src/web/components/ui/Button.tsx |  99 [32m+[m[31m--[m
+ packages/web/src/web/lib/forca-data.ts        |  13 [32m+[m[31m-[m
+ packages/web/src/web/lib/forca-engine.ts      |  18 [32m+[m[31m-[m
+ packages/web/src/web/lib/store.ts             |   2 [32m+[m
+ packages/web/src/web/pages/forca.tsx          |   3 [32m+[m[31m-[m
+ packages/web/tsconfig.app.json                |   4 [32m+[m[31m-[m
+ packages/web/vite.config.ts                   |   2 [32m+[m[31m-[m
+ 13 files changed, 1252 insertions(+), 411 deletions(-)

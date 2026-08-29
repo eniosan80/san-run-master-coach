@@ -1,0 +1,141 @@
+[1mdiff --git "a/.\\packages\\web\\src\\web\\lib\\forca-engine.ts" "b/.\\packages\\web\\src\\web-backup-mojibake\\lib\\forca-engine.ts"[m
+[1mindex cafd2d8..9640743 100644[m
+[1m--- "a/.\\packages\\web\\src\\web\\lib\\forca-engine.ts"[m
+[1m+++ "b/.\\packages\\web\\src\\web-backup-mojibake\\lib\\forca-engine.ts"[m
+[36m@@ -1,9 +1,9 @@[m
+ import { ForcaProfile, ForcaBlock, ForcaPlan } from "./store";[m
+ import { EXERCISES } from "./forca-data";[m
+ [m
+[31m-/* ---------------------------------------------[m
+[32m+[m[32m/* ─────────────────────────────────────────────[m
+    Helpers[m
+[31m---------------------------------------------- */[m
+[32m+[m[32m───────────────────────────────────────────── */[m
+ function byCategory(cat: string) {[m
+   return EXERCISES.filter(e => e.categoryId === cat);[m
+ }[m
+[36m@@ -46,7 +46,7 @@[m [mfunction prescribeBlocks(profile: ForcaProfile): ForcaBlock[] {[m
+   }[m
+ [m
+   /* =========================================================[m
+[31m-     1. MOBILIDADE � exatamente 2[m
+[32m+[m[32m     1. MOBILIDADE — exatamente 2[m
+      ========================================================= */[m
+ [m
+   if (profile.discomfort.includes("tornozelo")) {[m
+[36m@@ -61,8 +61,8 @@[m [mfunction prescribeBlocks(profile: ForcaProfile): ForcaBlock[] {[m
+   }[m
+ [m
+   /* =========================================================[m
+[31m-     2. ATIVA��O � exatamente 2[m
+[31m-     Prioriza as necessidades apontadas na avalia��o.[m
+[32m+[m[32m     2. ATIVAÇÃO — exatamente 2[m
+[32m+[m[32m     Prioriza as necessidades apontadas na avaliação.[m
+      ========================================================= */[m
+ [m
+   const w = profile.weakAreas;[m
+[36m@@ -82,8 +82,8 @@[m [mfunction prescribeBlocks(profile: ForcaProfile): ForcaBlock[] {[m
+   }[m
+ [m
+   /* =========================================================[m
+[31m-     3. FOR�A � m�ximo 3[m
+[31m-     Prioriza a �rea fraca do corredor.[m
+[32m+[m[32m     3. FORÇA — máximo 3[m
+[32m+[m[32m     Prioriza a área fraca do corredor.[m
+      ========================================================= */[m
+ [m
+   if (w.includes("pernas")) {[m
+[36m@@ -109,18 +109,18 @@[m [mfunction prescribeBlocks(profile: ForcaProfile): ForcaBlock[] {[m
+   }[m
+ [m
+ [m
+[31m-  /* Seguran�a: nunca ultrapassar 7 exerc�cios */[m
+[32m+[m[32m  /* Segurança: nunca ultrapassar 7 exercícios */[m
+   return blocks.slice(0, 7);[m
+ }[m
+ [m
+[31m-/* ---------------------------------------------[m
+[32m+[m[32m/* ─────────────────────────────────────────────[m
+    Calcular tempo total estimado[m
+[31m---------------------------------------------- */[m
+[32m+[m[32m───────────────────────────────────────────── */[m
+ function estimateDuration(blocks: ForcaBlock[]): string {[m
+   let seconds = 0;[m
+   for (const b of blocks) {[m
+     if (b.duration) {[m
+[31m-      // "30 segundos" ? 30s, "1 minuto" ? 60s[m
+[32m+[m[32m      // "30 segundos" → 30s, "1 minuto" → 60s[m
+       const match = b.duration.match(/(\d+)/);[m
+       if (match) seconds += parseInt(match[1]) * (b.duration.includes("minuto") ? 60 : 1);[m
+       // 3 sets[m
+[36m@@ -137,9 +137,9 @@[m [mfunction estimateDuration(blocks: ForcaBlock[]): string {[m
+   return `${Math.max(mins, 8)} min`;[m
+ }[m
+ [m
+[31m-/* ---------------------------------------------[m
+[32m+[m[32m/* ─────────────────────────────────────────────[m
+    Nome do plano baseado no perfil[m
+[31m---------------------------------------------- */[m
+[32m+[m[32m───────────────────────────────────────────── */[m
+ function planTitle(profile: ForcaProfile): string {[m
+   const hasLombar = profile.discomfort.includes("lombar");[m
+   const hasJoelho = profile.discomfort.includes("joelho");[m
+[36m@@ -147,10 +147,10 @@[m [mfunction planTitle(profile: ForcaProfile): string {[m
+ [m
+   if (hasMobLimitada && profile.weakAreas.includes("core")) return "Mobilidade + Core";[m
+   if (hasMobLimitada) return "Mobilidade + Estabilidade";[m
+[31m-  if (hasLombar) return "Prote��o Lombar + Core";[m
+[32m+[m[32m  if (hasLombar) return "Proteção Lombar + Core";[m
+   if (hasJoelho) return "Estabilidade de Joelho";[m
+[31m-  if (profile.weakAreas.includes("pernas") && profile.weakAreas.includes("core")) return "For�a Funcional";[m
+[31m-  if (profile.weakAreas.includes("gluteos")) return "Ativa��o de Gl�teos";[m
+[32m+[m[32m  if (profile.weakAreas.includes("pernas") && profile.weakAreas.includes("core")) return "Força Funcional";[m
+[32m+[m[32m  if (profile.weakAreas.includes("gluteos")) return "Ativação de Glúteos";[m
+   if (profile.weakAreas.includes("core")) return "Core do Corredor";[m
+   return "Complemento de Corrida";[m
+ }[m
+[36m@@ -158,25 +158,25 @@[m [mfunction planTitle(profile: ForcaProfile): string {[m
+ function planObjective(profile: ForcaProfile): string {[m
+   const hasMob = profile.mobility === "travado" || profile.mobility === "pouca";[m
+   if (hasMob) return "Melhorar amplitude de movimento e ativar musculatura estabilizadora antes da corrida.";[m
+[31m-  if (profile.discomfort.includes("joelho")) return "Fortalecer estabilizadores do joelho e reduzir risco de les�o.";[m
+[32m+[m[32m  if (profile.discomfort.includes("joelho")) return "Fortalecer estabilizadores do joelho e reduzir risco de lesão.";[m
+   if (profile.discomfort.includes("lombar")) return "Ativar core profundo e proteger a lombar durante as passadas.";[m
+[31m-  return "Desenvolver for�a espec�fica para corrida, melhorar economia de movimento e prevenir les�es.";[m
+[32m+[m[32m  return "Desenvolver força específica para corrida, melhorar economia de movimento e prevenir lesões.";[m
+ }[m
+ [m
+[31m-/* ---------------------------------------------[m
+[31m-   FUN��O PRINCIPAL[m
+[31m-   trainingDays: dias JS de corrida (0=Dom�6=S�b)[m
+[31m-   Retorna ForcaPlan com focusDays = dias sem corrida (at� daysPerWeek)[m
+[31m---------------------------------------------- */[m
+[32m+[m[32m/* ─────────────────────────────────────────────[m
+[32m+[m[32m   FUNÇÃO PRINCIPAL[m
+[32m+[m[32m   trainingDays: dias JS de corrida (0=Dom…6=Sáb)[m
+[32m+[m[32m   Retorna ForcaPlan com focusDays = dias sem corrida (até daysPerWeek)[m
+[32m+[m[32m───────────────────────────────────────────── */[m
+ export function generateForcaPlan(profile: ForcaProfile, trainingDays: number[]): ForcaPlan {[m
+   const allDays = [0, 1, 2, 3, 4, 5, 6];[m
+   const restDays = allDays.filter(d => !trainingDays.includes(d));[m
+ [m
+[31m-  // Preferir dias imediatamente ap�s corrida (recovery ativo)[m
+[31m-  // Se n�o h� dias de descanso suficientes, pegar dias de treino com menor conflito[m
+[32m+[m[32m  // Preferir dias imediatamente após corrida (recovery ativo)[m
+[32m+[m[32m  // Se não há dias de descanso suficientes, pegar dias de treino com menor conflito[m
+   let focusDays: number[];[m
+   if (restDays.length >= profile.daysPerWeek) {[m
+[31m-    // Ordenar: preferir dias logo ap�s um dia de treino[m
+[32m+[m[32m    // Ordenar: preferir dias logo após um dia de treino[m
+     const sorted = [...restDays].sort((a, b) => {[m
+       const prevA = trainingDays.includes((a + 6) % 7) ? 1 : 0;[m
+       const prevB = trainingDays.includes((b + 6) % 7) ? 1 : 0;[m
+[36m@@ -184,7 +184,7 @@[m [mexport function generateForcaPlan(profile: ForcaProfile, trainingDays: number[])[m
+     });[m
+     focusDays = sorted.slice(0, profile.daysPerWeek);[m
+   } else {[m
+[31m-    // Pegar todos os dias de descanso dispon�veis[m
+[32m+[m[32m    // Pegar todos os dias de descanso disponíveis[m
+     focusDays = restDays.slice(0, profile.daysPerWeek);[m
+   }[m
+ [m

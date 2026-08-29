@@ -5,7 +5,7 @@ import path from "path";
 import runableAnalyticsPlugin from "./vite/plugins/runable-analytics-plugin";
 import honoDevPlugin from "./vite/plugins/hono-dev-plugin";
 
-const root = path.resolve(__dirname, "../..");
+const root = __dirname;
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, root, '');

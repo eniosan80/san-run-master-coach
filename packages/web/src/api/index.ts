@@ -3,152 +3,378 @@ import { cors } from "hono/cors";
 import { db } from "./database";
 import * as schema from "./database/schema";
 import { eq, desc } from "drizzle-orm";
-import { classifyAthlete, generateDiagnosis, generateWorkout } from "./lib/classify";
-import type { ExperienceLevel, WeeklyFrequency } from "./lib/classify";
+import {
+classifyAthlete,
+generateDiagnosis,
+generateWorkout,
+} from "./lib/classify";
+import type {
+ExperienceLevel,
+WeeklyFrequency,
+} from "./lib/classify";
 import { randomUUID } from "crypto";
+import prescriptionRoutes from "./routes/prescription";
 
-const app = new Hono()
-  .basePath("api")
-  .use(cors({ origin: "*" }))
+const app = new Hono();
 
-  .get("/health", (c) => c.json({ status: "ok" }, 200))
+app.use("*", cors({ origin: "*" }));
 
-  // --- ATHLETE ---
-  .post("/athlete", async (c) => {
-    const body = await c.req.json();
-    const { name, age, sex, experience, weeklyFrequency, goal } = body;
+// ============================================================
+// HEALTH
+// ============================================================
 
-    const classification = classifyAthlete({
-      age: Number(age),
-      sex,
-      experience: experience as ExperienceLevel,
-      weeklyFrequency: weeklyFrequency as WeeklyFrequency,
-      goal,
-    });
+app.get("/api/health", (c) => {
+return c.json({ status: "ok" }, 200);
+});
 
-    const id = randomUUID();
+// ============================================================
+// PRESCRIPTION
+// ============================================================
 
-    await db.insert(schema.athletes).values({
-      id,
-      name,
-      age: Number(age),
-      sex,
-      experience,
-      weeklyFrequency,
-      goal,
-      level: classification.level,
-      phase: classification.phase,
-    });
+app.route("/api/prescription", prescriptionRoutes);
 
-    const diagnosis = generateDiagnosis(
-      { age: Number(age), sex, experience: experience as ExperienceLevel, weeklyFrequency: weeklyFrequency as WeeklyFrequency, goal },
-      classification
-    );
+// ============================================================
+// CREATE ATHLETE
+// ============================================================
 
-    const workout = generateWorkout(classification.level, classification.phase);
+app.post("/api/athlete", async (c) => {
+const body = await c.req.json();
 
-    // Save workout
-    const workoutId = randomUUID();
-    await db.insert(schema.workouts).values({
-      id: workoutId,
-      athleteId: id,
-      title: workout.title,
-      duration: workout.duration,
-      rpe: workout.rpe,
-      instructions: workout.instructions,
-      why: workout.why,
-      successCriteria: workout.successCriteria,
-    });
+const name = String(body.name ?? "");
+const age = Number(body.age);
+const sex = String(body.sex ?? "");
+const experience =
+body.experience as ExperienceLevel;
+const weeklyFrequency =
+body.weeklyFrequency as WeeklyFrequency;
+const goal = String(body.goal ?? "");
 
-    return c.json({ athlete: { id, name, level: classification.level, phase: classification.phase }, classification, diagnosis, workout }, 201);
-  })
+const classification = classifyAthlete({
+age,
+sex,
+experience,
+weeklyFrequency,
+goal,
+});
 
-  .get("/athlete/:id", async (c) => {
-    const id = c.req.param("id");
-    const [athlete] = await db.select().from(schema.athletes).where(eq(schema.athletes.id, id));
-    if (!athlete) return c.json({ error: "Atleta não encontrado" }, 404);
-    return c.json({ athlete }, 200);
-  })
+const athleteId = randomUUID();
 
-  // --- CHECKIN ---
-  .post("/checkin", async (c) => {
-    const body = await c.req.json();
-    const { athleteId, sleep, energy, pain, motivation } = body;
+await db.insert(schema.athletes).values({
+id: athleteId,
+name,
+age,
+sex,
+experience,
+weeklyFrequency,
+goal,
 
-    const s = Number(sleep);
-    const e = Number(energy);
-    const p = Number(pain);
-    const m = Number(motivation);
 
-    // Readiness formula
-    const score = (s + e + m) / 3 - p / 5;
-    let readiness: "high" | "medium" | "low";
-    if (score >= 3.5) readiness = "high";
-    else if (score >= 2) readiness = "medium";
-    else readiness = "low";
+level: String(classification.level),
+phase: String(classification.phase),
+goalType: goal,
 
-    const id = randomUUID();
-    await db.insert(schema.checkins).values({
-      id,
+weeklyVolume: 0,
+
+
+});
+
+const diagnosis = generateDiagnosis(
+{
+age,
+sex,
+experience,
+weeklyFrequency,
+goal,
+},
+classification,
+);
+
+const generatedWorkout = generateWorkout(
+classification.level,
+classification.phase,
+);
+
+const workoutId = randomUUID();
+console.log("DEBUG generatedWorkout:", generatedWorkout);
+console.log("DEBUG duration:", generatedWorkout.duration);
+await db.insert(schema.workouts).values({
+id: workoutId,
+athleteId: athleteId,
+title: generatedWorkout.title,
+type: "easy",
+duration: Number.parseInt(generatedWorkout.duration, 10),
+distance: 0,
+rpe: Number(generatedWorkout.rpe),
+instructions: generatedWorkout.instructions,
+why: generatedWorkout.why,
+successCriteria: generatedWorkout.successCriteria,
+status: "planned",
+completed: false,
+});
+
+return c.json(
+{
+athlete: {
+id: athleteId,
+name,
+level: classification.level,
+phase: classification.phase,
+},
+classification,
+diagnosis,
+workout: {
+id: workoutId,
+...generatedWorkout,
+},
+},
+201,
+);
+});
+
+// ============================================================
+// GET ATHLETE
+// ============================================================
+
+app.get("/api/athlete/:id", async (c) => {
+const id = c.req.param("id");
+
+const [athlete] = await db
+.select()
+.from(schema.athletes)
+.where(eq(schema.athletes.id, id));
+
+if (!athlete) {
+return c.json(
+{ error: "Atleta não encontrado" },
+404,
+);
+}
+
+return c.json({ athlete }, 200);
+});
+
+// ============================================================
+// CREATE CHECK-IN
+// ============================================================
+
+app.post("/api/checkin", async (c) => {
+const body = await c.req.json();
+
+const athleteId = String(
+body.athleteId ?? "",
+);
+
+const sleep = Number(body.sleep);
+const energy = Number(body.energy);
+const pain = Number(body.pain);
+const motivation = Number(body.motivation);
+
+const score =
+(sleep + energy + motivation) / 3 -
+pain / 5;
+
+let readiness: "high" | "medium" | "low";
+
+if (score >= 3.5) {
+readiness = "high";
+} else if (score >= 2) {
+readiness = "medium";
+} else {
+readiness = "low";
+}
+
+const checkinId = randomUUID();
+
+await db.insert(schema.checkins).values({
+id: checkinId,
+athleteId,
+sleep,
+energy,
+pain,
+motivation,
+readiness,
+});
+
+const [athlete] = await db
+.select()
+.from(schema.athletes)
+.where(
+eq(
+schema.athletes.id,
+athleteId,
+),
+);
+
+let workout = null;
+
+if (athlete) {
+const generatedWorkout = generateWorkout(
+Number(athlete.level),
+athlete.phase as any,
+readiness,
+);
+
+
+const workoutId = randomUUID();
+
+await db.insert(schema.workouts).values({
+  id: workoutId,
+  athleteId: athlete.id,
+  title: generatedWorkout.title,
+  type: "easy",
+  duration: Number.parseInt(generatedWorkout.duration, 10),
+  distance: 0,
+  rpe: Number(generatedWorkout.rpe),
+  instructions:
+    generatedWorkout.instructions,
+  why: generatedWorkout.why,
+  successCriteria:
+    generatedWorkout.successCriteria,
+  status: "planned",
+  completed: false,
+});
+
+workout = {
+  id: workoutId,
+  ...generatedWorkout,
+};
+
+
+}
+
+return c.json(
+{
+checkin: {
+id: checkinId,
+readiness,
+score,
+},
+workout,
+},
+201,
+);
+});
+
+// ============================================================
+// GET CHECK-INS
+// ============================================================
+
+app.get(
+"/api/checkin/:athleteId",
+async (c) => {
+const athleteId =
+c.req.param("athleteId");
+
+
+const checkinsList = await db
+  .select()
+  .from(schema.checkins)
+  .where(
+    eq(
+      schema.checkins.athleteId,
       athleteId,
-      sleep: s,
-      energy: e,
-      pain: p,
-      motivation: m,
-      readiness,
-    });
+    ),
+  )
+  .orderBy(
+    desc(schema.checkins.createdAt),
+  )
+  .limit(7);
 
-    // Get athlete for workout generation
-    const [athlete] = await db.select().from(schema.athletes).where(eq(schema.athletes.id, athleteId));
-    let workout = null;
-    if (athlete) {
-      const w = generateWorkout(athlete.level, athlete.phase as any, readiness);
-      const workoutId = randomUUID();
-      await db.insert(schema.workouts).values({
-        id: workoutId,
-        athleteId,
-        title: w.title,
-        duration: w.duration,
-        rpe: w.rpe,
-        instructions: w.instructions,
-        why: w.why,
-        successCriteria: w.successCriteria,
-      });
-      workout = { id: workoutId, ...w };
-    }
+return c.json(
+  {
+    checkins: checkinsList,
+  },
+  200,
+);
 
-    return c.json({ checkin: { id, readiness }, workout }, 201);
+
+},
+);
+
+// ============================================================
+// GET TODAY'S WORKOUT
+// ============================================================
+
+app.get(
+"/api/workout/:athleteId/today",
+async (c) => {
+const athleteId =
+c.req.param("athleteId");
+
+
+const [workout] = await db
+  .select()
+  .from(schema.workouts)
+  .where(
+    eq(
+      schema.workouts.athleteId,
+      athleteId,
+    ),
+  )
+  .orderBy(
+    desc(schema.workouts.createdAt),
+  )
+  .limit(1);
+
+if (!workout) {
+  return c.json(
+    {
+      error:
+        "Nenhum treino encontrado",
+    },
+    404,
+  );
+}
+
+return c.json(
+  { workout },
+  200,
+);
+
+
+},
+);
+
+// ============================================================
+// COMPLETE WORKOUT
+// ============================================================
+
+app.post(
+"/api/workout/:id/complete",
+async (c) => {
+const id = c.req.param("id");
+
+
+await db
+  .update(schema.workouts)
+  .set({
+    completed: true,
+    status: "completed",
   })
+  .where(
+    eq(
+      schema.workouts.id,
+      id,
+    ),
+  );
 
-  .get("/checkin/:athleteId", async (c) => {
-    const athleteId = c.req.param("athleteId");
-    const checkinsList = await db
-      .select()
-      .from(schema.checkins)
-      .where(eq(schema.checkins.athleteId, athleteId))
-      .orderBy(desc(schema.checkins.createdAt))
-      .limit(7);
-    return c.json({ checkins: checkinsList }, 200);
-  })
+return c.json(
+  { success: true },
+  200,
+);
 
-  // --- WORKOUT ---
-  .get("/workout/:athleteId/today", async (c) => {
-    const athleteId = c.req.param("athleteId");
-    const [workout] = await db
-      .select()
-      .from(schema.workouts)
-      .where(eq(schema.workouts.athleteId, athleteId))
-      .orderBy(desc(schema.workouts.createdAt))
-      .limit(1);
-    if (!workout) return c.json({ error: "Nenhum treino encontrado" }, 404);
-    return c.json({ workout }, 200);
-  })
 
-  .post("/workout/:id/complete", async (c) => {
-    const id = c.req.param("id");
-    await db.update(schema.workouts).set({ completed: true }).where(eq(schema.workouts.id, id));
-    return c.json({ success: true }, 200);
-  });
+},
+);
+
+// ============================================================
+// EXPORT
+// ============================================================
 
 export type AppType = typeof app;
+
 export default app;
+
+
+
+

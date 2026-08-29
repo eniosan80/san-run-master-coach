@@ -4,13 +4,6 @@ import { EXERCISES } from "./forca-data";
 /* ─────────────────────────────────────────────
    Helpers
 ───────────────────────────────────────────── */
-function byCategory(cat: string) {
-  return EXERCISES.filter(e => e.categoryId === cat);
-}
-
-function pick(arr: typeof EXERCISES, id: string): typeof EXERCISES[0] | undefined {
-  return arr.find(e => e.id === id);
-}
 
 function toBlock(e: typeof EXERCISES[0]): ForcaBlock {
   return {
@@ -131,7 +124,16 @@ function prescribeBlocks(profile: ForcaProfile): ForcaBlock[] {
     add("ponte-gluteo");
   }
 
-  return blocks;
+const typeOrder: Record<ForcaBlock["type"], number> = {
+  mobilidade: 0,
+  ativacao: 1,
+  educativo: 2,
+  forca: 3,
+};
+
+blocks.sort((a, b) => typeOrder[a.type] - typeOrder[b.type]);
+
+return blocks;
 }
 
 /* ─────────────────────────────────────────────
