@@ -96,7 +96,7 @@ export default function CheckinPage() {
         json: {
           athleteId: session.athlete.id,
           sleep: form.sleep, energy: form.energy,
-          pain: form.pain, motivation: form.motivation,
+          pain: form.pain, motivation: form.motivation, workoutHistory: session.workoutHistory || [],
         },
       });
       const data = await res.json();
@@ -137,7 +137,7 @@ export default function CheckinPage() {
           <div className="anim-up">
             <span className="tag tag-stone" style={{ marginBottom: 14, display: "inline-flex" }}>Antes do Treino</span>
             <h1 className="t-h1" style={{ marginBottom: 8 }}>Check-in Diário</h1>
-            <p className="t-body">Como você está chegando para o treino hoje?</p>
+            <p className="t-body">Como você está chegando para o treino hoje?.</p>
           </div>
         </div>
 

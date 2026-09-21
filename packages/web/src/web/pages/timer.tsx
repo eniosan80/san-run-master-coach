@@ -1,5 +1,5 @@
 /**
- * TREINO GUIADO SAN RUN — Execução coaching
+ * TREINO GUIADO SAN RUN — ExecuÃ§Ã£o coaching
  * Motor intocado — visual identity v3, VOICE_HOOK comments, no emojis
  */
 
@@ -14,7 +14,7 @@ import {
   ExecStep,
 } from "../lib/store";
 
-// ─── palette ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const C = {
   bg:        "#0B0B0F",
   card:      "#141422",
@@ -27,7 +27,7 @@ const C = {
   border:    "#252530",
 } as const;
 
-// ─── helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function pad(n: number) { return String(Math.floor(n)).padStart(2, "0"); }
 
@@ -52,7 +52,7 @@ function phaseColor(phase: ExecStep["phase"] | "free"): string {
 
 function phaseLabel(phase: ExecStep["phase"]): string {
   switch (phase) {
-    case "work":     return "ESFORÇO";
+    case "work":     return "ESFORÃ‡O";
     case "rest":     return "RECUPERAÇÃO";
     case "warmup":   return "AQUECIMENTO";
     case "cooldown": return "DESAQUECIMENTO";
@@ -63,13 +63,13 @@ function phaseObjective(step: ExecStep): string {
   // Usa notes reais do bloco se existir
   if (step.notes) return step.notes;
   if (step.phase === "warmup")   return "Ative o corpo. Construa o ritmo gradualmente.";
-  if (step.phase === "cooldown") return "Reduza a intensidade. Permita a recuperação.";
-  if (step.phase === "rest")     return "Respire fundo. Prepare-se para o próximo esforço.";
+  if (step.phase === "cooldown") return "Reduza a intensidade. Permita a recuperaÃ§Ã£o.";
+  if (step.phase === "rest")     return "Respire fundo. Prepare-se para o prÃ³ximo esforço.";
   const lbl = step.label.toLowerCase();
-  if (lbl.includes("forte") || lbl.includes("tiro") || lbl.includes("rápid"))
-    return "Dê o máximo. Este é o momento de evoluir.";
+  if (lbl.includes("forte") || lbl.includes("tiro") || lbl.includes("rÃ¡pid"))
+    return "DÃª o mÃ¡ximo. Este Ã© o momento de evoluir.";
   if (lbl.includes("progressiv"))
-    return "Aumente o ritmo gradualmente. Sinta a progressão.";
+    return "Aumente o ritmo gradualmente. Sinta a progressÃ£o.";
   return "Mantenha o ritmo. Cada passada conta.";
 }
 
@@ -80,30 +80,30 @@ function coachMessage(
   isLast: boolean,
 ): string {
   if (isFirst && progress < 0.15) {
-    if (phase === "warmup")   return "Controle o ritmo. O treino começa agora.";
+    if (phase === "warmup")   return "Controle o ritmo. O treino comeÃ§a agora.";
     if (phase === "work")     return "Foco total. Resultado vem do processo.";
-    if (phase === "rest")     return "Respire. Você está no caminho certo.";
-    if (phase === "cooldown") return "Quase lá. Deixe o corpo desacelerar.";
+    if (phase === "rest")     return "Respire. VocÃª estÃ¡ no caminho certo.";
+    if (phase === "cooldown") return "Quase lÃ¡. Deixe o corpo desacelerar.";
   }
   if (progress >= 0.45 && progress <= 0.55) {
-    if (phase === "work") return "Mantenha a estratégia. Você está no ritmo.";
-    if (phase === "rest") return "Aproveite a recuperação. O próximo bloco espera.";
+    if (phase === "work") return "Mantenha a estratÃ©gia. VocÃª estÃ¡ no ritmo.";
+    if (phase === "rest") return "Aproveite a recuperaÃ§Ã£o. O prÃ³ximo bloco espera.";
     return "Metade do caminho. Continue constante.";
   }
   if (progress > 0.8) {
-    if (isLast)           return "Mais um passo construído. Você chegou.";
-    if (phase === "work") return "Quase lá. Segura o ritmo até o fim.";
-    if (phase === "rest") return "Prepare-se. O próximo bloco começa em breve.";
+    if (isLast)           return "Mais um passo construÃ­do. VocÃª chegou.";
+    if (phase === "work") return "Quase lÃ¡. Segura o ritmo atÃ© o fim.";
+    if (phase === "rest") return "Prepare-se. O prÃ³ximo bloco comeÃ§a em breve.";
     return "Finalizando esta etapa. Mente San, Corpo Run.";
   }
   if (phase === "work")     return "Cada passo faz parte do plano.";
-  if (phase === "rest")     return "Recuperação é parte do treino.";
+  if (phase === "rest")     return "RecuperaÃ§Ã£o Ã© parte do treino.";
   if (phase === "warmup")   return "Corpo aquecendo. Ritmo se formando.";
   if (phase === "cooldown") return "Constância em movimento.";
-  return "Você está sendo guiado pelo SAN RUN.";
+  return "VocÃª estÃ¡ sendo guiado pelo SAN RUN.";
 }
 
-// ─── SVG icons ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ SVG icons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const IconPlay = ({ color = "#fff", size = 20 }: { color?: string; size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
@@ -128,7 +128,7 @@ const IconStop = ({ color = C.terracota, size = 16 }: { color?: string; size?: n
   </svg>
 );
 const IconChev = ({ color = C.muted, size = 14 }: { color?: string; size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
+  <svg width={size}  height={size} viewBox="0 0 14 14" fill="none">
     <path d="M5 3L9 7L5 11" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
@@ -150,7 +150,7 @@ const IconArrowRight = ({ color = "#fff", size = 18 }: { color?: string; size?: 
   </svg>
 );
 
-// ─── anel de progresso ────────────────────────────────────────────────────────
+// â”€â”€â”€ anel de progresso â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function Ring({
   size, stroke, progress, color, bg = C.surface2, children,
@@ -178,7 +178,7 @@ function Ring({
   );
 }
 
-// ─── tela de finalização ──────────────────────────────────────────────────────
+// â”€â”€â”€ tela de finalização â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function FinishScreen({
   elapsed, rpe, obs, workoutName, stepsCompleted, totalSteps,
@@ -193,17 +193,17 @@ function FinishScreen({
   const rpeLabels: Record<number, string> = {
     1: "Muito leve", 2: "Leve", 3: "Moderado", 4: "Moderado forte",
     5: "Forte", 6: "Forte+", 7: "Muito forte", 8: "Intenso",
-    9: "Muito intenso", 10: "Máximo absoluto",
+    9: "Muito intenso", 10: "MÃ¡ximo absoluto",
   };
   // Milestone labels para mostrar inline no grid RPE
-  const rpeMilestone: Record<number, string> = { 1: "Leve", 5: "Forte", 8: "Intenso", 10: "Máximo" };
+  const rpeMilestone: Record<number, string> = { 1: "Leve", 5: "Forte", 8: "Intenso", 10: "MÃ¡ximo" };
 
   const canSave = rpe > 0;
 
   return (
     <div style={{ height: "100dvh", background: C.bg, color: C.offwhite, display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-      {/* ── hero ── */}
+      {/* â”€â”€ hero â”€â”€ */}
       <div style={{
         background: `linear-gradient(180deg, #141422 0%, ${C.bg} 100%)`,
         padding: "36px 24px 24px", textAlign: "center",
@@ -215,7 +215,7 @@ function FinishScreen({
           fontSize: 9, letterSpacing: 4, color: C.terracota,
           textTransform: "uppercase", fontWeight: 700, marginBottom: 6,
         }}>
-          TREINO CONCLUÍDO
+          TREINO CONCLUÃDO
         </div>
         {/* workout name */}
         <div style={{
@@ -256,7 +256,7 @@ function FinishScreen({
               </div>
             </div>
           )}
-          {/* badge consistência */}
+          {/* badge consistÃªncia */}
           <div style={{
             flex: 1, background: C.terracota + "12", borderRadius: 14,
             padding: "12px 8px", border: `1px solid ${C.terracota}28`,
@@ -275,7 +275,7 @@ function FinishScreen({
         </div>
       </div>
 
-      {/* ── conteúdo scrollável ── */}
+      {/* conteúdo scrollável */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 0", minHeight: 0 }}>
 
         {/* RPE section */}
@@ -348,7 +348,7 @@ function FinishScreen({
         </div>
       </div>
 
-      {/* ── CTA ── */}
+      {/* â”€â”€ CTA â”€â”€ */}
       <div style={{ padding: "12px 20px", paddingBottom: "max(20px, env(safe-area-inset-bottom, 20px))", borderTop: `1px solid ${C.surface2}`, background: C.bg, flexShrink: 0 }}>
         {/* motivational quote above CTA */}
         <div style={{ textAlign: "center", marginBottom: 10 }}>
@@ -379,12 +379,12 @@ function FinishScreen({
   );
 }
 
-// ─── BuilderTimer ─────────────────────────────────────────────────────────────
+// BuilderTimer 
 
 function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: string }) {
   const [, navigate] = useLocation();
 
-  // ── estado (motor intocado) ──
+  // â”€â”€ estado (motor intocado) â”€â”€
   const [stepIdx, setStepIdx]           = useState(0);
   const [remaining, setRemaining]       = useState(steps[0]?.durationSec ?? 0);
   const [running, setRunning]           = useState(false);
@@ -400,7 +400,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
   stepIdxRef.current   = stepIdx;
   remainingRef.current = remaining;
 
-  // ── Web Audio: bipes de contagem regressiva + aviso de nova etapa ──
+  // â”€â”€ Web Audio: bipes de contagem regressiva + aviso de nova etapa â”€â”€
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   function getAudioCtx(): AudioContext {
@@ -410,7 +410,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
     return audioCtxRef.current;
   }
 
-  // Bipe simples: freq Hz, duração ms, volume 0–1
+  // Bipe simples: freq Hz, duração ms, volume 0â€“1
   function beep(freq: number, durationMs: number, vol = 0.35, delayMs = 0) {
     try {
       const ctx = getAudioCtx();
@@ -501,11 +501,11 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
   function handleSaveAndExit() {
     const s = loadSession();
     if (s) {
-      addWorkoutRecord({
-        date: new Date().toISOString(), title: workoutName,
-        duration: fmtTime(totalElapsed), completed: true,
-        rpe: rpeActual, elapsedSeconds: totalElapsed,
-      });
+     addWorkoutRecord({
+  date: new Date().toISOString(), title: workoutName,
+  duration: fmtTime(totalElapsed), completed: true,
+  rpe: rpeActual, elapsedSeconds: totalElapsed,
+});
       s.activeBuilderSession = undefined as any;
       saveSession(s);
     }
@@ -522,7 +522,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
     ? coachMessage(step?.phase ?? "work", stepProgress, stepIdx === 0, isLastStep)
     : "Pronto para começar. Aperte INICIAR quando quiser.";
 
-  // ── finalização ──
+  // â”€â”€ finalização â”€â”€
   if (finished) {
     return (
       <FinishScreen
@@ -542,7 +542,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
       display: "flex", flexDirection: "column", overflow: "hidden",
     }}>
 
-      {/* ═══ TOPO ══════════════════════════════════════════════════════════ */}
+      {/* â•â•â• TOPO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div style={{
         padding: "16px 20px 14px",
         borderBottom: `1px solid ${C.surface2}`,
@@ -584,7 +584,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
         </div>
       </div>
 
-      {/* ═══ FASE ATUAL ════════════════════════════════════════════════════ */}
+      {/* â•â•â• FASE ATUAL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div style={{
         margin: "8px 20px 0",
         background: `linear-gradient(135deg, ${color}10 0%, ${color}05 100%)`,
@@ -592,7 +592,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
         border: `1px solid ${color}28`,
         flexShrink: 0,
       }}>
-        {/* linha 1: badge fase + badge série + label tudo inline */}
+        {/* linha 1: badge fase + badge sÃ©rie + label tudo inline */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 5,
@@ -615,10 +615,10 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
               background: C.surface2, borderRadius: 20, padding: "3px 10px",
               border: `1px solid ${C.border}`, flexShrink: 0,
             }}>
-              Série {step.currentRep} / {step.totalReps}
+              SÃ©rie {step.currentRep} / {step.totalReps}
             </div>
           )}
-          {/* blockName inline quando série */}
+          {/* blockName inline quando sÃ©rie */}
           {step?.totalReps && step.blockName && step.blockName !== step.label && (
             <span style={{ fontSize: 10, color: color, textTransform: "uppercase", letterSpacing: 1, fontWeight: 700 }}>
               {step.blockName}
@@ -642,14 +642,14 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
           )}
         </div>
 
-        {/* descrição — 1 linha com ellipsis */}
+        {/* descriÃ§Ã£o — 1 linha com ellipsis */}
         <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.4, marginTop: 3,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {step ? phaseObjective(step) : ""}
         </div>
       </div>
 
-      {/* ═══ CRONÔMETRO ════════════════════════════════════════════════════ */}
+      {/* â•â•â• CRONÃ”METRO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div style={{
         flex: 1, display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
@@ -670,7 +670,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
           </div>
         </Ring>
 
-        {/* coach message — linha única compacta */}
+        {/* coach message — linha Ãºnica compacta */}
         <div style={{
           marginTop: 10, paddingTop: 8,
           maxWidth: 300, textAlign: "center",
@@ -683,7 +683,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
         </div>
       </div>
 
-      {/* ═══ PRÓXIMA ETAPA ════════════════════════════════════════════════ */}
+      {/* â•â•â• PRÃ“XIMA ETAPA â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div style={{ padding: "6px 20px 0", flexShrink: 0 }}>
         {nextStep ? (
           <div style={{
@@ -707,7 +707,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
               </div>
               {nextStep.totalReps && nextStep.currentRep && (
                 <div style={{ fontSize: 10, color: C.muted }}>
-                  Série {nextStep.currentRep}/{nextStep.totalReps}{nextStep.rpe ? ` · RPE ${nextStep.rpe}` : ""}
+                  SÃ©rie {nextStep.currentRep}/{nextStep.totalReps}{nextStep.rpe ? ` Â· RPE ${nextStep.rpe}` : ""}
                 </div>
               )}
             </div>
@@ -722,13 +722,13 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
             border: `1px solid ${C.terracota}28`, textAlign: "center",
           }}>
             <div style={{ fontSize: 12, color: C.terracota, fontWeight: 700 }}>
-              Última etapa — dê o seu melhor
+              Ãšltima etapa — dÃª o seu melhor
             </div>
           </div>
         )}
       </div>
 
-      {/* ═══ CONTROLES ════════════════════════════════════════════════════ */}
+      {/* â•â•â• CONTROLES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div style={{ padding: "8px 20px", paddingBottom: "max(20px, env(safe-area-inset-bottom, 20px))", flexShrink: 0 }}>
         {!started ? (
           <button onClick={handleStart} style={{
@@ -788,7 +788,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
         )}
       </div>
 
-      {/* ═══ MODAL ENCERRAR ═══════════════════════════════════════════════ */}
+      {/* â•â•â• MODAL ENCERRAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {showConfirm && (
         <div style={{
           position: "fixed", inset: 0, background: "rgba(0,0,0,0.88)",
@@ -802,8 +802,8 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
             <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>Encerrar treino?</div>
             <div style={{ fontSize: 14, color: C.muted, marginBottom: 6, lineHeight: 1.6 }}>
               {steps.length - stepIdx - 1 > 0
-                ? `Ainda restam ${steps.length - stepIdx - 1} etapa(s). O treino será salvo até aqui.`
-                : "Esta é a última etapa."}
+                ? `Ainda restam ${steps.length - stepIdx - 1} etapa(s). O treino serÃ¡ salvo atÃ© aqui.`
+                : "Esta Ã© a Ãºltima etapa."}
             </div>
             <div style={{ fontSize: 13, color: C.terracota, fontStyle: "italic", marginBottom: 26 }}>
               "Cada passo faz parte do plano."
@@ -834,7 +834,7 @@ function BuilderTimer({ steps, workoutName }: { steps: ExecStep[]; workoutName: 
   );
 }
 
-// ─── FreeRunTimer ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ FreeRunTimer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function FreeRunTimer({ title, rpe: suggestedRpe }: { title: string; rpe: number }) {
   const [, navigate] = useLocation();
@@ -862,11 +862,11 @@ function FreeRunTimer({ title, rpe: suggestedRpe }: { title: string; rpe: number
   function handleFinish() { setRunning(false); setFinished(true); }
 
   function handleSaveAndExit() {
-    addWorkoutRecord({
-      date: new Date().toISOString(), title,
-      duration: fmtTime(elapsed), completed: true,
-      rpe: rpeActual, elapsedSeconds: elapsed,
-    });
+   addWorkoutRecord({
+  date: new Date().toISOString(), title,
+  duration: fmtTime(elapsed), completed: true,
+  rpe: rpeActual, elapsedSeconds: elapsed,
+});
     navigate("/dashboard");
   }
 
@@ -928,7 +928,7 @@ function FreeRunTimer({ title, rpe: suggestedRpe }: { title: string; rpe: number
 
         <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 6 }}>{title}</div>
         <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.5, marginBottom: suggestedRpe > 0 ? 8 : 0 }}>
-          Mantenha o ritmo. Você está sendo guiado pelo SAN RUN.
+          Mantenha o ritmo. VocÃª estÃ¡ sendo guiado pelo SAN RUN.
         </div>
         {suggestedRpe > 0 && (
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
@@ -940,7 +940,7 @@ function FreeRunTimer({ title, rpe: suggestedRpe }: { title: string; rpe: number
         )}
       </div>
 
-      {/* cronômetro */}
+      {/* cronÃ´metro */}
       <div style={{
         flex: 1, display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center", padding: "6px 20px 0", minHeight: 0,
@@ -1025,14 +1025,14 @@ function FreeRunTimer({ title, rpe: suggestedRpe }: { title: string; rpe: number
   );
 }
 
-// ─── roteador ─────────────────────────────────────────────────────────────────
-// Fonte única de dados: activeBuilderSession (montador) ou workout.blocks (plano semanal).
-// FreeRunTimer só é usado quando não há estrutura de blocos em nenhuma das fontes.
+// â”€â”€â”€ roteador â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Fonte Ãºnica de dados: activeBuilderSession (montador) ou workout.blocks (plano semanal).
+// FreeRunTimer sÃ³ Ã© usado quando nÃ£o hÃ¡ estrutura de blocos em nenhuma das fontes.
 
 export default function TimerPage() {
   const s = loadSession();
 
-  // 1. Montador de treino — prioridade máxima
+  // 1. Montador de treino — prioridade mÃ¡xima
   if (s?.activeBuilderSession && s.activeBuilderSession.blocks.length > 0) {
     const steps = expandBlocksToSteps(s.activeBuilderSession.blocks);
     if (steps.length > 0) {

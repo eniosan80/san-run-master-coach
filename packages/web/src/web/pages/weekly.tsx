@@ -1,4 +1,4 @@
-import { useLocation } from "wouter";
+﻿import { useLocation } from "wouter";
 import { loadSession, saveSession, generateDefaultWeeklyPlan, WeeklyWorkout } from "../lib/store";
 import { BottomNav } from "../components/BottomNav";
 
@@ -53,12 +53,12 @@ function statusConfig(status: WeeklyWorkout["status"]) {
 
 const DAY_NAMES: Record<string, string> = {
   SEG: "Segunda", TER: "Terça", QUA: "Quarta",
-  QUI: "Quinta", SEX: "Sexta", SÁB: "Sábado", DOM: "Domingo",
+  QUI: "Quinta", SEX: "Sexta", SAB: "Sábado", DOM: "Domingo",
 };
 
-// Mapeamento label → índice JS (0=Dom…6=Sáb)
+// Mapeamento label → índice JS (0=Dom...6=Sáb)
 const DAY_LABEL_TO_INDEX: Record<string, number> = {
-  DOM: 0, SEG: 1, TER: 2, QUA: 3, QUI: 4, SEX: 5, SÁB: 6,
+  DOM: 0, SEG: 1, TER: 2, QUA: 3, QUI: 4, SEX: 5, SAB: 6,
 };
 
 export default function WeeklyPage() {
@@ -103,7 +103,7 @@ export default function WeeklyPage() {
       <div className="screen" style={{ position: "relative", zIndex: 1 }}>
         <div className="page-content">
 
-          {/* ── Header ── */}
+          {/* ÔöÇÔöÇ Header ÔöÇÔöÇ */}
           <div className="anim-up" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={() => navigate("/dashboard")}
@@ -123,12 +123,15 @@ export default function WeeklyPage() {
               <h2 style={{ fontSize: "1.3rem", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--offwhite)", lineHeight: 1.1 }}>
                 Semana {plan.weekNumber}
               </h2>
+              <p style={{ fontSize: "0.72rem", color: "var(--muted)", marginTop: 4 }}>
+                {new Date(plan.startDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })} a {new Date(new Date(plan.startDate).setDate(new Date(plan.startDate).getDate() + 6)).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+              </p>
             </div>
             <img src="/logo-eagle.png" alt="" style={{ height: 36, objectFit: "contain", opacity: 0.6,
               filter: "drop-shadow(0 2px 8px rgba(196,98,45,0.2))" }} />
           </div>
 
-          {/* ── Progress card ── */}
+          {/* ÔöÇÔöÇ Progress card ÔöÇÔöÇ */}
           <div className="card anim-up d1">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <p style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
@@ -147,13 +150,13 @@ export default function WeeklyPage() {
               fontWeight: plan.completedCount >= plan.requiredCount ? 700 : 400,
             }}>
               {plan.completedCount >= plan.requiredCount
-                ? "Semana completa. Pronto para a próxima."
+                ? "Semana completa. Pronta para a próxima."
                 : `Conclua ${plan.requiredCount} treinos para desbloquear a próxima semana.`
               }
             </p>
           </div>
 
-          {/* ── Day cards ── */}
+          {/* ÔöÇÔöÇ Day cards ÔöÇÔöÇ */}
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {plan.workouts.map((w, i) => {
               const cfg = statusConfig(w.status);
@@ -235,7 +238,7 @@ export default function WeeklyPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                         <span style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: displayCfg.color }}>
-                          {DAY_NAMES[w.day] ?? w.day}
+                          {DAY_NAMES[w.day === "SÁB" ? "SAB" : w.day] ?? w.day}
                         </span>
                         <span style={{
                           fontSize: "0.6rem", padding: "2px 7px", borderRadius: 20,
@@ -264,7 +267,7 @@ export default function WeeklyPage() {
                       )}
                       {!isRest && (
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-                          {w.duration !== "—" && (
+                          {w.duration !== "ÔÇö" && (
                             <span className="tag tag-muted" style={{ fontSize: "0.65rem" }}>{w.duration}</span>
                           )}
                           {w.rpe > 1 && !isLocked && (
@@ -289,7 +292,7 @@ export default function WeeklyPage() {
                 Semana completa
               </p>
               <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-                Próxima semana disponível no painel.
+              próximasemana disponível no painel.
               </p>
             </div>
           )}
@@ -300,3 +303,7 @@ export default function WeeklyPage() {
     </div>
   );
 }
+
+
+
+

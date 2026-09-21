@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useLocation } from "wouter";
 import { api } from "../lib/api";
 import { saveSession } from "../lib/store";
@@ -32,7 +32,7 @@ const freqOpts = [
   { v: "5+",  label: "5 ou mais por semana", sub: "Alta frequência" },
 ];
 
-// Sugestões sem "meia maratona" isolado — "prova" agora abre campos específicos
+// Sugestões sem "meia maratona" isolado — "prova" agora abre campos especí­ficos
 const goalSuggestions = [
   "Quero correr 2 km sem parar",
   "Quero completar 5 km",
@@ -68,7 +68,7 @@ function ExpIcon({ v }: { v: string }) {
   );
 }
 
-/* ─── Botão padrão SAN RUN ──────────────────────────── */
+/* Botão padrão SAN RUN */
 const SanBtn = ({ label, onClick, disabled, loading, loadingLabel }: {
   label: string; onClick?: () => void; disabled?: boolean; loading?: boolean; loadingLabel?: string;
 }) => (
@@ -175,7 +175,7 @@ export default function OnboardingPage() {
         json: {
           name: form.name, age: +form.age, sex: form.sex,
           experience: form.experience, weeklyFrequency: form.weeklyFrequency,
-          trainingDays: form.trainingDays, goal: finalGoal,
+          trainingDays: form.trainingDays, goal: finalGoal, startDate: new Date().toISOString(),
         }
       });
       const data = await res.json();
@@ -184,7 +184,7 @@ export default function OnboardingPage() {
         athlete: {
           ...data.athlete, age: +form.age, sex: form.sex,
           experience: form.experience, weeklyFrequency: form.weeklyFrequency,
-          trainingDays: form.trainingDays, goal: finalGoal,
+          trainingDays: form.trainingDays, goal: finalGoal, startDate: new Date().toISOString(),
         },
         classification: data.classification,
         diagnosis: data.diagnosis,
@@ -201,8 +201,7 @@ export default function OnboardingPage() {
     }
   };
 
-  const progressPct = ((step - 1) / TOTAL) * 100;
-
+  
   const btnLabel = loading
     ? "Gerando sua avaliação..."
     : step === TOTAL
@@ -424,8 +423,8 @@ export default function OnboardingPage() {
                 {[
                   { label: "Nome", value: form.name },
                   { label: "Idade", value: `${form.age} anos` },
-                  { label: "Experiência", value: expOpts.find(o => o.v === form.experience)?.label || form.experience },
-                  { label: "Frequência atual", value: freqOpts.find(o => o.v === form.weeklyFrequency)?.label || form.weeklyFrequency },
+                  { label: "experiência", value: expOpts.find(o => o.v === form.experience)?.label || form.experience },
+                  { label: "frequência atual", value: freqOpts.find(o => o.v === form.weeklyFrequency)?.label || form.weeklyFrequency },
                   {
                     label: "Dias de treino",
                     value: (() => {
@@ -475,3 +474,4 @@ export default function OnboardingPage() {
     </div>
   );
 }
+

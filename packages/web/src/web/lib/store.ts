@@ -1,12 +1,13 @@
-export interface AthleteSession {
+﻿export interface AthleteSession {
   id: string;
   name: string;
   age: number;
   sex: string;
   experience: string;
   weeklyFrequency: string;
-  trainingDays: number[]; // 0=Dom,1=Seg,2=Ter,3=Qua,4=Qui,5=Sex,6=Sáb
+  trainingDays: number[]; // 0=Dom,1=Seg,2=Ter,3=Qua,4=Qui,5=Sex,6=SÃƒÆ’Ã‚Â¡b
   goal: string;
+  startDate: string;
   level: number;
   phase: string;
 }
@@ -51,10 +52,11 @@ export interface WorkoutRecord {
   duration: string;
   completed: boolean;
   rpe: number;
+    targetRpe?: number;
   elapsedSeconds?: number;
 }
 
-/** Bloco estruturado de treino — fonte única de verdade */
+/** Bloco estruturado de treino - fonte única de verdade */
 export interface WorkoutBlock {
   type: "warmup" | "series" | "cooldown" | "continuous";
   label: string;
@@ -69,14 +71,14 @@ export interface WorkoutBlock {
 }
 
 export interface WeeklyWorkout {
-  day: string;        // "SEG" | "TER" | "QUA" | "QUI" | "SEX" | "SÁB" | "DOM"
+  day: string;        // "SEG" | "TER" | "QUA" | "QUI" | "SEX" | "SAB" | "DOM"
   dayIndex: number;   // 0-6
   title: string;
   duration: string;
   rpe: number;
   objective: string;
   status: "done" | "active" | "next" | "locked" | "rest";
-  // Dados completos do treino — fonte única de verdade
+  // Dados completos do treino - fonte única de verdade
   instructions?: string;
   why?: string;
   successCriteria?: string;
@@ -115,24 +117,24 @@ export interface BuilderSession {
   createdAt: string;
 }
 
-// Flat execution step — generated from BuilderBlock list for the timer
+// Flat execution step ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â generated from BuilderBlock list for the timer
 export interface ExecStep {
   blockId: string;
-  label: string;       // "Corrida forte", "Recuperação", "Aquecimento", etc.
-  blockName: string;   // nome do bloco pai — ex: "Corrida Progressiva" ou "AQUECIMENTO"
+  label: string;       // "Corrida forte", "RecuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o", "Aquecimento", etc.
+  blockName: string;   // nome do bloco pai ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ex: "Corrida Progressiva" ou "AQUECIMENTO"
   type: BuilderBlock["type"];
   phase: "work" | "rest" | "warmup" | "cooldown"; // for coloring
   durationSec: number;
   rpe?: number;
   notes?: string;
   repLabel?: string;   // "1 / 8" (serie atual / total)
-  totalReps?: number;  // total de repetições do bloco (só para series)
-  currentRep?: number; // número da repetição atual (1-based)
+  totalReps?: number;  // total de repetiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes do bloco (sÃƒÆ’Ã‚Â³ para series)
+  currentRep?: number; // nÃƒÆ’Ã‚Âºmero da repetiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o atual (1-based)
 }
 
-/* ─── FORÇA SAN RUN ─── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ FORÃƒÆ’Ã¢â‚¬Â¡A SAN RUN ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 export interface ForcaProfile {
-  daysPerWeek: number;          // 1–4
+  daysPerWeek: number;          // 1ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“4
   discomfort: string[];         // joelho, quadril, tornozelo, panturrilha, posterior, lombar, nenhuma
   weakAreas: string[];          // core, gluteos, pernas, panturrilhas, nao_sei
   mobility: "travado" | "pouca" | "normal" | "boa";
@@ -153,7 +155,7 @@ export interface ForcaBlock {
 export interface ForcaPlan {
   title: string;          // "Estabilidade + Mobilidade"
   objective: string;
-  focusDays: number[];    // JS day indices (0=Dom…6=Sáb)
+  focusDays: number[];    // JS day indices (0=Dom...6=Sáb)
   totalDuration: string;  // "22 min"
   blocks: ForcaBlock[];
   sessionsCompleted: number;
@@ -254,7 +256,7 @@ export function expandBlocksToSteps(blocks: BuilderBlock[]): ExecStep[] {
     if (block.type === "series" && block.reps && block.reps > 0) {
       for (let r = 1; r <= block.reps; r++) {
         const repLabel = `${r} / ${block.reps}`;
-        // Work phase — label é o nome real do bloco (ex: "Corrida forte")
+        // Work phase ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â label ÃƒÆ’Ã‚Â© o nome real do bloco (ex: "Corrida forte")
         steps.push({
           blockId: block.id,
           label: block.label,
@@ -272,7 +274,7 @@ export function expandBlocksToSteps(blocks: BuilderBlock[]): ExecStep[] {
         if ((block.restDurationMin ?? 0) > 0) {
           steps.push({
             blockId: block.id,
-            label: "Recuperação",
+            label: "RecuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o",
             blockName: block.label,
             type: "series",
             phase: "rest",
@@ -314,12 +316,12 @@ export function calcTotalDurationMin(blocks: BuilderBlock[]): number {
 }
 
 export function formatDurationMin(min: number): string {
-  if (min <= 0) return "—";
+  if (min <= 0) return "ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â";
   if (min < 60) return `${min} min`;
   return `${Math.floor(min / 60)}h ${min % 60 > 0 ? min % 60 + "min" : ""}`.trim();
 }
 
-// Converte WorkoutBlock[] (treinos do plano semanal) para ExecStep[] — mesma interface do timer
+// Converte WorkoutBlock[] (treinos do plano semanal) para ExecStep[] ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â mesma interface do timer
 export function expandWorkoutBlocksToSteps(blocks: WorkoutBlock[]): ExecStep[] {
   const steps: ExecStep[] = [];
   let idCounter = 0;
@@ -343,7 +345,7 @@ export function expandWorkoutBlocksToSteps(blocks: WorkoutBlock[]): ExecStep[] {
         if ((block.restDurationMin ?? 0) > 0) {
           steps.push({
             blockId,
-            label: block.restLabel ?? "Recuperação",
+            label: block.restLabel ?? "RecuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o",
             blockName: block.label,
             type: "series",
             phase: "rest",
@@ -374,7 +376,7 @@ export function expandWorkoutBlocksToSteps(blocks: WorkoutBlock[]): ExecStep[] {
   return steps;
 }
 
-/** Biblioteca de treinos inline — mesmos dados de classify.ts mas sem dep de backend */
+/** Biblioteca de treinos inline ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â mesmos dados de classify.ts mas sem dep de backend */
 const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
   title: string; duration: string; rpe: number; objective: string;
   instructions: string; why: string; successCriteria: string;
@@ -385,8 +387,8 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       title: "Caminhada Ativa + Trote Suave",
       duration: "25 min", rpe: 3,
       objective: "Adaptar o corpo ao impacto da corrida",
-      instructions: "Inicie com 10 min de caminhada em ritmo confortável. Em seguida, alterne: 1 min de trote leve + 2 min de caminhada. Repita 4 vezes. Finalize com 5 min de caminhada.",
-      why: "Alternar caminhada e trote constrói base sem sobrecarregar articulações e músculos.",
+      instructions: "Inicie com 10 min de caminhada em ritmo confortÃƒÆ’Ã‚Â¡vel. Em seguida, alterne: 1 min de trote leve + 2 min de caminhada. Repita 4 vezes. Finalize com 5 min de caminhada.",
+      why: "Alternar caminhada e trote constrÃƒÆ’Ã‚Â³i base sem sobrecarregar articulaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes e mÃƒÆ’Ã‚Âºsculos.",
       successCriteria: "Manter o trote sem parar antes do tempo e chegar ao final sem dor.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 10, rpe: 2 },
@@ -397,10 +399,10 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
     {
       title: "Caminhada de Base",
       duration: "30 min", rpe: 2,
-      objective: "Criar o hábito de movimento",
-      instructions: "Caminhe em ritmo constante e confortável. Mantenha postura ereta, ombros relaxados. Respire pelo nariz quando possível.",
-      why: "Ativar o sistema cardiovascular de forma gentil e criar o hábito.",
-      successCriteria: "Terminar o tempo proposto sem exaustão.",
+      objective: "Criar o hÃƒÆ’Ã‚Â¡bito de movimento",
+      instructions: "Caminhe em ritmo constante e confortÃƒÆ’Ã‚Â¡vel. Mantenha postura ereta, ombros relaxados. Respire pelo nariz quando possÃƒÆ’Ã‚Â­vel.",
+      why: "Ativar o sistema cardiovascular de forma gentil e criar o hÃƒÆ’Ã‚Â¡bito.",
+      successCriteria: "Terminar o tempo proposto sem exaustÃƒÆ’Ã‚Â£o.",
       blocks: [
         { type: "continuous", label: "Caminhada LE", durationMin: 30, rpe: 2 },
       ],
@@ -410,8 +412,8 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       duration: "30 min", rpe: 3,
       objective: "Introduzir o trote gradualmente",
       instructions: "10 min caminhada leve. Alterne: 2 min trote leve + 2 min caminhada. Repita 4 vezes. Finalize com 4 min de caminhada.",
-      why: "Progressão gradual respeita o ritmo de adaptação do seu corpo.",
-      successCriteria: "Completar todas as séries sem parar antes do tempo.",
+      why: "ProgressÃƒÆ’Ã‚Â£o gradual respeita o ritmo de adaptaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do seu corpo.",
+      successCriteria: "Completar todas as sÃƒÆ’Ã‚Â©ries sem parar antes do tempo.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 10, rpe: 2 },
         { type: "series", label: "Trote LE", reps: 4, workDurationMin: 2, restDurationMin: 2, workRpe: 3, restRpe: 2, restLabel: "Caminhada LE" },
@@ -421,12 +423,12 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
   ],
   2: [
     {
-      title: "Corrida Contínua Leve",
+      title: "Corrida ContÃƒÆ’Ã‚Â­nua Leve",
       duration: "30 min", rpe: 4,
-      objective: "Construir base aeróbica",
-      instructions: "Corra em ritmo leve e constante. Você deve conseguir falar frases curtas enquanto corre. Se não conseguir, reduza o ritmo.",
-      why: "Resistência aeróbica é o alicerce de qualquer progresso.",
-      successCriteria: "Completar o tempo sem pausas. Terminar cansado, mas não esgotado.",
+      objective: "Construir base aerÃƒÆ’Ã‚Â³bica",
+      instructions: "Corra em ritmo leve e constante. VocÃƒÆ’Ã‚Âª deve conseguir falar frases curtas enquanto corre. Se nÃƒÆ’Ã‚Â£o conseguir, reduza o ritmo.",
+      why: "ResistÃƒÆ’Ã‚Âªncia aerÃƒÆ’Ã‚Â³bica ÃƒÆ’Ã‚Â© o alicerce de qualquer progresso.",
+      successCriteria: "Completar o tempo sem pausas. Terminar cansado, mas nÃƒÆ’Ã‚Â£o esgotado.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 5, rpe: 3 },
         { type: "continuous", label: "Corrida LE", durationMin: 20, rpe: 4 },
@@ -438,7 +440,7 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       duration: "35 min", rpe: 6,
       objective: "Introduzir velocidade",
       instructions: "5 min aquecimento. 8 tiros de 30 seg em ritmo forte + 1 min caminhada. 10 min corrida leve. 5 min desaquecimento.",
-      why: "Estímulos curtos de velocidade desenvolvem potência sem acumular fadiga excessiva.",
+      why: "EstÃƒÆ’Ã‚Â­mulos curtos de velocidade desenvolvem potÃƒÆ’Ã‚Âªncia sem acumular fadiga excessiva.",
       successCriteria: "Manter a mesma intensidade do tiro 1 no tiro 8.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 5, rpe: 3 },
@@ -450,10 +452,10 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
     {
       title: "Corrida Progressiva",
       duration: "35 min", rpe: 5,
-      objective: "Progressão de ritmo",
+      objective: "ProgressÃƒÆ’Ã‚Â£o de ritmo",
       instructions: "5 min aquecimento. 10 min corrida leve. 10 min corrida moderada. 5 min corrida forte. 5 min desaquecimento.",
-      why: "Aprender a progredir o esforço — habilidade fundamental para provas.",
-      successCriteria: "Cada bloco visivelmente mais rápido que o anterior.",
+      why: "Aprender a progredir o esforÃƒÆ’Ã‚Â§o ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â habilidade fundamental para provas.",
+      successCriteria: "Cada bloco visivelmente mais rÃƒÆ’Ã‚Â¡pido que o anterior.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 5, rpe: 3 },
         { type: "continuous", label: "Corrida LE", durationMin: 10, rpe: 4 },
@@ -469,21 +471,21 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       duration: "40 min", rpe: 6,
       objective: "Desenvolver variação de ritmo",
       instructions: "10 min aquecimento em ritmo leve. 20 min alternando: 4 min ritmo moderado (pode falar poucas palavras) + 2 min ritmo leve. Finalize com 10 min de desaquecimento leve.",
-      why: "Variações de ritmo desenvolvem múltiplos sistemas energéticos — essencial para provas.",
+      why: "Variações de ritmo desenvolvem múltiplos sistemas energéticos e ensinam seu corpo a se recuperar sob esforço — essencial para provas.",
       successCriteria: "Completar todos os blocos sem precisar reduzir o ritmo moderado para leve.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 10, rpe: 4 },
-        { type: "series", label: "Corrida MO", reps: 3, workDurationMin: 4, restDurationMin: 2, workRpe: 6, restRpe: 3, restLabel: "Recuperação LE" },
+        { type: "series", label: "Corrida MO", reps: 3, workDurationMin: 4, restDurationMin: 2, workRpe: 6, restRpe: 3, restLabel: "RecuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o LE" },
         { type: "cooldown", label: "Desaquecimento", durationMin: 10, rpe: 4 },
       ],
     },
     {
-      title: "Fartlek 5×2'",
+      title: "Fartlek 5ÃƒÆ’Ã¢â‚¬â€2'",
       duration: "40 min", rpe: 6,
-      objective: "Capacidade de aceleração e recuperação",
-      instructions: "10 min aquecimento. 5 acelerações de 2 min em ritmo forte + 2 min trote leve. 10 min desaquecimento.",
-      why: "Fartlek desenvolve capacidade de acelerar e se recuperar — base para qualquer objetivo de performance.",
-      successCriteria: "Manter o mesmo ritmo nas 5 acelerações.",
+      objective: "Capacidade de aceleraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o e recuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o",
+      instructions: "10 min aquecimento. 5 aceleraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes de 2 min em ritmo forte + 2 min trote leve. 10 min desaquecimento.",
+      why: "Fartlek desenvolve capacidade de acelerar e se recuperar ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â base para qualquer objetivo de performance.",
+      successCriteria: "Manter o mesmo ritmo nas 5 aceleraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 10, rpe: 4 },
         { type: "series", label: "Fartlek FO", reps: 5, workDurationMin: 2, restDurationMin: 2, workRpe: 7, restRpe: 3, restLabel: "Trote LE" },
@@ -493,10 +495,10 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
     {
       title: "Corrida Longa",
       duration: "55 min", rpe: 5,
-      objective: "Volume aeróbico semanal",
-      instructions: "10 min aquecimento. 40 min corrida contínua em ritmo leve-moderado. 5 min desaquecimento.",
-      why: "O longo semanal é insubstituível. Volume aeróbico é o que constrói a base para tudo.",
-      successCriteria: "Completar os 40 min contínuos mantendo ritmo conversacional.",
+      objective: "Volume aerÃƒÆ’Ã‚Â³bico semanal",
+      instructions: "10 min aquecimento. 40 min corrida contÃƒÆ’Ã‚Â­nua em ritmo leve-moderado. 5 min desaquecimento.",
+      why: "O longo semanal ÃƒÆ’Ã‚Â© insubstituÃƒÆ’Ã‚Â­vel. Volume aerÃƒÆ’Ã‚Â³bico ÃƒÆ’Ã‚Â© o que constrÃƒÆ’Ã‚Â³i a base para tudo.",
+      successCriteria: "Completar os 40 min contÃƒÆ’Ã‚Â­nuos mantendo ritmo conversacional.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 10, rpe: 4 },
         { type: "continuous", label: "Corrida MO", durationMin: 40, rpe: 5 },
@@ -508,10 +510,10 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
     {
       title: "Corrida Progressiva",
       duration: "45 min", rpe: 7,
-      objective: "Controle de esforço e progressão",
-      instructions: "Divida o treino em 3 partes iguais: primeiro terço em ritmo leve, segundo terço em ritmo moderado, último terço em ritmo forte. Não saia rápido — termine forte.",
-      why: "Treinos progressivos desenvolvem controle de esforço e eficiência metabólica.",
-      successCriteria: "Cada bloco mais rápido que o anterior. Último km mais rápido que o primeiro.",
+      objective: "Controle de esforÃƒÆ’Ã‚Â§o e progressÃƒÆ’Ã‚Â£o",
+      instructions: "Divida o treino em 3 partes iguais: primeiro terÃƒÆ’Ã‚Â§o em ritmo leve, segundo terÃƒÆ’Ã‚Â§o em ritmo moderado, ÃƒÆ’Ã‚Âºltimo terÃƒÆ’Ã‚Â§o em ritmo forte. NÃƒÆ’Ã‚Â£o saia rÃƒÆ’Ã‚Â¡pido ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â termine forte.",
+      why: "Treinos progressivos desenvolvem controle de esforÃƒÆ’Ã‚Â§o e eficiÃƒÆ’Ã‚Âªncia metabÃƒÆ’Ã‚Â³lica.",
+      successCriteria: "Cada bloco mais rÃƒÆ’Ã‚Â¡pido que o anterior. ÃƒÆ’Ã…Â¡ltimo km mais rÃƒÆ’Ã‚Â¡pido que o primeiro.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 5, rpe: 4 },
         { type: "continuous", label: "Corrida LE", durationMin: 12, rpe: 5 },
@@ -521,10 +523,10 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       ],
     },
     {
-      title: "Intervalado 8×2'",
+      title: "Intervalado 8ÃƒÆ’Ã¢â‚¬â€2'",
       duration: "50 min", rpe: 8,
       objective: "Velocidade e VO2max",
-      instructions: "15 min aquecimento. 8 repetições de: 2 min em ritmo forte (RPE 8) + 90 seg recuperação ativa. 10 min desaquecimento.",
+      instructions: "15 min aquecimento. 8 repetiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes de: 2 min em ritmo forte (RPE 8) + 90 seg recuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ativa. 10 min desaquecimento.",
       why: "Intervalados de alta intensidade aumentam VO2max e velocidade de corrida.",
       successCriteria: "Manter o mesmo ritmo do intervalo 1 no intervalo 8.",
       blocks: [
@@ -534,11 +536,11 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       ],
     },
     {
-      title: "Longão Progressivo",
+      title: "LongÃƒÆ’Ã‚Â£o Progressivo",
       duration: "70 min", rpe: 6,
-      objective: "Resistência e eficiência energética",
+      objective: "ResistÃƒÆ’Ã‚Âªncia e eficiÃƒÆ’Ã‚Âªncia energÃƒÆ’Ã‚Â©tica",
       instructions: "10 min aquecimento. 50 min progressivos: 20 min LE, 20 min MO, 10 min FO. 10 min desaquecimento.",
-      why: "Longão progressivo constrói resistência e eficiência energética.",
+      why: "LongÃƒÆ’Ã‚Â£o progressivo constrÃƒÆ’Ã‚Â³i resistÃƒÆ’Ã‚Âªncia e eficiÃƒÆ’Ã‚Âªncia energÃƒÆ’Ã‚Â©tica.",
       successCriteria: "Completar os 50 min sem parar, acelerando progressivamente.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 10, rpe: 4 },
@@ -554,8 +556,8 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       title: "Intervalado de Alta Intensidade",
       duration: "55 min", rpe: 8,
       objective: "VO2max e performance",
-      instructions: "15 min aquecimento. 6 repetições de: 3 min em ritmo forte (RPE 8-9) + 2 min recuperação ativa (trote leve). 15 min desaquecimento.",
-      why: "Intervalados de alta intensidade aumentam VO2max, velocidade limiar e capacidade de repetir esforços.",
+      instructions: "15 min aquecimento. 6 repetiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes de: 3 min em ritmo forte (RPE 8-9) + 2 min recuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ativa (trote leve). 15 min desaquecimento.",
+      why: "Intervalados de alta intensidade aumentam VO2max, velocidade limiar e capacidade de repetir esforÃƒÆ’Ã‚Â§os.",
       successCriteria: "Manter o mesmo ritmo do bloco 1 no bloco 6.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 15, rpe: 5 },
@@ -566,9 +568,9 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
     {
       title: "Corrida de Limiar",
       duration: "55 min", rpe: 8,
-      objective: "Velocidade sustentável máxima",
-      instructions: "15 min aquecimento. 25 min em ritmo de limiar (RPE 7-8 — desconfortável mas sustentável). 15 min desaquecimento.",
-      why: "Treino de limiar aumenta a velocidade que você consegue manter por longos períodos.",
+      objective: "Velocidade sustentÃƒÆ’Ã‚Â¡vel mÃƒÆ’Ã‚Â¡xima",
+      instructions: "15 min aquecimento. 25 min em ritmo de limiar (RPE 7-8 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â desconfortÃƒÆ’Ã‚Â¡vel mas sustentÃƒÆ’Ã‚Â¡vel). 15 min desaquecimento.",
+      why: "Treino de limiar aumenta a velocidade que vocÃƒÆ’Ã‚Âª consegue manter por longos perÃƒÆ’Ã‚Â­odos.",
       successCriteria: "Manter o ritmo constante nos 25 min sem precisar reduzir.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 15, rpe: 5 },
@@ -577,12 +579,12 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
       ],
     },
     {
-      title: "Longão de Performance",
+      title: "LongÃƒÆ’Ã‚Â£o de Performance",
       duration: "90 min", rpe: 7,
-      objective: "Base para provas de longa distância",
-      instructions: "15 min aquecimento. 60 min corrida contínua em ritmo moderado-forte. 15 min desaquecimento.",
-      why: "Volume alto com intensidade moderada. Base para provas de longa distância.",
-      successCriteria: "Completar os 90 min. Ritmo estável nos últimos 20 min.",
+      objective: "Base para provas de longa distÃƒÆ’Ã‚Â¢ncia",
+      instructions: "15 min aquecimento. 60 min corrida contÃƒÆ’Ã‚Â­nua em ritmo moderado-forte. 15 min desaquecimento.",
+      why: "Volume alto com intensidade moderada. Base para provas de longa distÃƒÆ’Ã‚Â¢ncia.",
+      successCriteria: "Completar os 90 min. Ritmo estÃƒÆ’Ã‚Â¡vel nos ÃƒÆ’Ã‚Âºltimos 20 min.",
       blocks: [
         { type: "warmup", label: "Aquecimento", durationMin: 15, rpe: 5 },
         { type: "continuous", label: "Corrida MO-FO", durationMin: 60, rpe: 7 },
@@ -592,77 +594,110 @@ const WORKOUT_LIBRARY_FRONTEND: Record<number, Array<{
   ],
 };
 
-// trainingDays: array of JS day indices chosen by athlete (0=Dom,1=Seg...6=Sáb)
+// trainingDays: array of JS day indices chosen by athlete (0=Dom,1=Seg...6=SÃƒÆ’Ã‚Â¡b)
 // If empty/undefined, falls back to default spread
-export function generateDefaultWeeklyPlan(level: number, trainingDays?: number[]): WeeklyPlan {
-  const today = new Date();
-  const todayDayIndex = today.getDay(); // 0=Sun,1=Mon,...,6=Sat
-  const dayOfWeek = today.getDay();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+export function generateDefaultWeeklyPlan(
+  level: number,
+  trainingDays?: number[],
+  startDate?: string
+): WeeklyPlan {
+  const anchor = startDate ? new Date(startDate) : new Date();
 
-  const dayLabels = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
-  // Display order: Mon→Sun (JS indices)
-  const weekOrder = [1, 2, 3, 4, 5, 6, 0];
+  const start = new Date(
+    anchor.getFullYear(),
+    anchor.getMonth(),
+    anchor.getDate()
+  );
 
-  const lib = WORKOUT_LIBRARY_FRONTEND[Math.min(Math.max(level, 1), 5)];
+  // A semana do calendário sempre começa na segunda-feira.
+  const monday = new Date(start);
+  const day = monday.getDay();
+  const daysFromMonday = day === 0 ? 6 : day - 1;
+  monday.setDate(monday.getDate() - daysFromMonday);
 
-  const chosen: number[] = (trainingDays && trainingDays.length > 0)
-    ? trainingDays
-    : [1, 3, 5, 6];
+  const dayLabels = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
 
-  // Sort chosen days in display order (Mon first)
-  const sortedChosen = [...chosen].sort((a, b) => weekOrder.indexOf(a) - weekOrder.indexOf(b));
+  const lib =
+    WORKOUT_LIBRARY_FRONTEND[Math.min(Math.max(level, 1), 5)];
+
+  const chosen =
+    trainingDays && trainingDays.length > 0
+      ? trainingDays
+      : [2, 4, 6];
 
   let workoutIdx = 0;
-  const workouts: WeeklyWorkout[] = weekOrder.map((jsDay) => {
-    const isTrainingDay = sortedChosen.includes(jsDay);
-    if (isTrainingDay) {
-      const tpl = lib[workoutIdx % lib.length];
-      // Status based on actual day of week
-      let status: WeeklyWorkout["status"];
-      if (jsDay === todayDayIndex) {
-        status = "active"; // today
-      } else {
-        // past days in this week = next (available), future = next (available)
-        // All training days available — athlete chooses when to do
-        status = "next";
+
+  const today = new Date();
+  const todayDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+
+  const workouts: WeeklyWorkout[] = Array.from(
+    { length: 7 },
+    (_, offset) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + offset);
+
+      const jsDay = date.getDay();
+
+      // Na primeira semana, dias anteriores ao início do aluno
+      // não fazem parte do calendário dele.
+      if (date < start) {
+        return {
+          day: dayLabels[jsDay],
+          dayIndex: jsDay,
+          title: "Indisponível",
+          duration: "-",
+          rpe: 1,
+          objective: "Antes do início do plano",
+          status: "locked",
+        };
       }
+
+      const isTrainingDay = chosen.includes(jsDay);
+
+      if (!isTrainingDay) {
+        return {
+          day: dayLabels[jsDay],
+          dayIndex: jsDay,
+          title: "Descanso",
+          duration: "-",
+          rpe: 1,
+          objective: "Recuperação",
+          status: "rest",
+        };
+      }
+
+      const tpl = lib[workoutIdx % lib.length];
       workoutIdx++;
+
+      const isToday =
+        date.getFullYear() === todayDate.getFullYear() &&
+        date.getMonth() === todayDate.getMonth() &&
+        date.getDate() === todayDate.getDate();
+
       return {
         day: dayLabels[jsDay],
         dayIndex: jsDay,
-        title: tpl.title,
-        duration: tpl.duration,
-        rpe: tpl.rpe,
-        objective: tpl.objective,
-        status,
-        // Dados completos — fonte única de verdade
-        instructions: tpl.instructions,
-        why: tpl.why,
-        successCriteria: tpl.successCriteria,
-        blocks: tpl.blocks,
-      };
-    } else {
-      return {
-        day: dayLabels[jsDay],
-        dayIndex: jsDay,
-        title: "Descanso",
-        duration: "—",
-        rpe: 1,
-        objective: "Recuperação",
-        status: "rest" as WeeklyWorkout["status"],
+        ...tpl,
+        status: isToday ? "active" : "next",
       };
     }
-  });
+  );
 
   return {
     weekNumber: 1,
     startDate: monday.toISOString(),
     completedCount: 0,
-    requiredCount: sortedChosen.length,
+    requiredCount: workouts.filter(
+      (workout) => workout.status !== "rest" && workout.status !== "locked"
+    ).length,
     unlocked: true,
     workouts,
   };
 }
+
+
 

@@ -145,7 +145,7 @@ const [athlete] = await db
 
 if (!athlete) {
 return c.json(
-{ error: "Atleta não encontrado" },
+{ error: "Atleta não encontrado→" },
 404,
 );
 }
@@ -168,6 +168,7 @@ const sleep = Number(body.sleep);
 const energy = Number(body.energy);
 const pain = Number(body.pain);
 const motivation = Number(body.motivation);
+  const workoutHistory = Array.isArray(body.workoutHistory) ? body.workoutHistory : [];
 
 const score =
 (sleep + energy + motivation) / 3 -
@@ -209,9 +210,10 @@ let workout = null;
 
 if (athlete) {
 const generatedWorkout = generateWorkout(
-Number(athlete.level),
-athlete.phase as any,
-readiness,
+  Number(athlete.level),
+  athlete.phase as any,
+  readiness,
+  workoutHistory,
 );
 
 

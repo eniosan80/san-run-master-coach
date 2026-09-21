@@ -865,11 +865,16 @@ const RECOVERY_WORKOUT: WorkoutRecommendation = {
 export function generateWorkout(
   level: number,
   phase: Phase,
-  checkinReadiness?: string
+  checkinReadiness?: string,
+  workoutHistory?: Array<{
+    title: string;
+    completed: boolean;
+    rpe: number;
+    targetRpe?: number;
+  }>
 ): WorkoutRecommendation {
-  // O parâmetro phase faz parte da API da função e será utilizado
-  // nas próximas regras de periodização.
-  // Por enquanto, mantemos a fase sem alterar a seleção da biblioteca.
+  // A fase continua fazendo parte da API da função.
+  // A periodização será aprofundada nas próximas etapas.
   void phase;
 
   const readiness = checkinReadiness ?? "high";
@@ -882,6 +887,72 @@ export function generateWorkout(
   const lib = WORKOUT_LIBRARY[safeLevel];
 
   const recommendation = lib[0];
+
+  // --------------------------------------------------------------------------
+  // HISTÓRICO DO TREINO
+  // --------------------------------------------------------------------------
+
+  const history = Array.isArray(workoutHistory)
+    ? workoutHistory
+    : [];
+
+  const lastWorkout = history.find(
+    (workout) => workout.completed
+  );
+
+  let adaptedRecommendation = recommendation;
+
+  if (lastWorkout) {
+    const targetRpe =
+      lastWorkout.targetRpe ?? recommendation.rpe;
+
+    const actualRpe =
+      lastWorkout.rpe ?? targetRpe;
+
+    // O treino ficou significativamente mais difícil
+    // do que o planejado.
+    // Não progredir automaticamente.
+    if (actualRpe >= targetRpe + 2) {
+      adaptedRecommendation = {
+        ...recommendation,
+        rpe: Math.max(1, recommendation.rpe - 1),
+        title: `Treino Ajustado — ${recommendation.title}`,
+        instructions:
+          recommendation.instructions +
+          " Hoje, priorize um esforço mais confortável. O objetivo é terminar o treino com controle.",
+        blocks: recommendation.blocks.map((block) => {
+          if (block.workRpe !== undefined) {
+            return {
+              ...block,
+              workRpe: Math.max(1, block.workRpe - 1),
+            };
+          }
+
+          if (
+            block.type === "continuous" &&
+            block.rpe !== undefined
+          ) {
+            return {
+              ...block,
+              rpe: Math.max(1, block.rpe - 1),
+            };
+          }
+
+          return block;
+        }),
+      };
+    } else if (actualRpe > targetRpe) {
+      adaptedRecommendation = {
+        ...recommendation,
+        title: `Continuidade — ${recommendation.title}`,
+      };
+    } else {
+      adaptedRecommendation = {
+        ...recommendation,
+        title: `Continuidade — ${recommendation.title}`,
+      };
+    }
+  }
 
   // --------------------------------------------------------------------------
   // READINESS BAIXA
@@ -900,9 +971,9 @@ export function generateWorkout(
 
   if (readiness === "medium") {
     return {
-      ...recommendation,
-      rpe: Math.max(1, recommendation.rpe - 1),
-      title: `Treino Ajustado — ${recommendation.title}`,
+      ...adaptedRecommendation,
+      rpe: Math.max(1, adaptedRecommendation.rpe - 1),
+      title: `Treino Ajustado — ${adaptedRecommendation.title}`,
     };
   }
 
@@ -910,5 +981,5 @@ export function generateWorkout(
   // READINESS ALTA
   // --------------------------------------------------------------------------
 
-  return recommendation;
+  return adaptedRecommendation;
 }
