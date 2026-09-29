@@ -2,6 +2,7 @@
 import { useLocation } from "wouter";
 import { api } from "../lib/api";
 import { saveSession } from "../lib/store";
+import { resolve2KProgramSelection } from "../../api/library";
 
 const TOTAL = 4;
 
@@ -32,9 +33,18 @@ const freqOpts = [
   { v: "5+",  label: "5 ou mais por semana", sub: "Alta frequência" },
 ];
 
+// Objetivo oficial de 2 km (usado também na lista de sugestões abaixo)
+const GOAL_2K = "Quero correr 2 km sem parar";
+
+// Máximo de dias do objetivo 2K: vem da regra da biblioteca (semana inteira disponível)
+const MAX_2K_DAYS = (() => {
+  const all = resolve2KProgramSelection(7);
+  return all.status === "selected" ? all.sessionsPerWeek : 0;
+})();
+
 // Sugestões sem "meia maratona" isolado — "prova" agora abre campos especí­ficos
 const goalSuggestions = [
-  "Quero correr 2 km sem parar",
+  GOAL_2K,
   "Quero completar 5 km",
   "Quero melhorar meu tempo no 5 km",
   "Quero emagrecer correndo",
@@ -117,6 +127,28 @@ export default function OnboardingPage() {
     raceMode: false, raceDistance: "", raceCustomDistance: "", raceDate: "",
   });
 
+  // Regra do objetivo 2K: só vale depois que o objetivo é conhecido
+  const is2KGoal = form.goal === GOAL_2K;
+  const twoK = is2KGoal ? resolve2KProgramSelection(form.trainingDays.length) : null;
+  const twoKAtLimit = is2KGoal && form.trainingDays.length >= MAX_2K_DAYS;
+  const twoKBlocked = is2KGoal && (twoK?.status !== "selected" || form.trainingDays.length > MAX_2K_DAYS);
+  const twoKNotice = !is2KGoal ? null
+    : form.trainingDays.length > MAX_2K_DAYS
+      ? `Para o objetivo de 2 km, o programa utiliza no máximo ${MAX_2K_DAYS} dias por semana. Ajuste sua seleção para continuar.`
+      : twoK?.status === "requires_more_days" && form.trainingDays.length > 0
+        ? "Para esse objetivo, precisamos de pelo menos 2 treinos por semana. Se possível, escolha mais um dia para que o programa possa ser iniciado."
+        : form.trainingDays.length === MAX_2K_DAYS
+          ? `Você atingiu a frequência máxima deste programa. Seus treinos serão organizados nesses ${MAX_2K_DAYS} dias. Se quiser, você pode trocar algum dos dias escolhidos.`
+          : null;
+  const twoKNoticeEl = twoKNotice ? (
+    <div style={{
+      marginTop: 14, background: "rgba(196,98,45,0.1)", border: "1px solid rgba(196,98,45,0.2)",
+      borderRadius: 12, padding: "12px 14px"
+    }}>
+      <p style={{ color: "var(--terra-lite)", fontSize: "0.84rem" }}>{twoKNotice}</p>
+    </div>
+  ) : null;
+
   const set = (k: keyof Form, v: string | boolean) => { setForm(f => ({ ...f, [k]: v })); setErr(""); };
   const toggleDay = (d: number) => {
     setErr("");
@@ -124,7 +156,9 @@ export default function OnboardingPage() {
       ...f,
       trainingDays: f.trainingDays.includes(d)
         ? f.trainingDays.filter(x => x !== d)
-        : [...f.trainingDays, d],
+        : (f.goal === GOAL_2K && f.trainingDays.length >= MAX_2K_DAYS)
+          ? f.trainingDays
+          : [...f.trainingDays, d],
     }));
   };
 
@@ -156,8 +190,8 @@ export default function OnboardingPage() {
 
   const canNext = () => {
     if (step === 1) return form.name.trim().length >= 2 && +form.age >= 10 && !!form.sex;
-    if (step === 2) return !!form.experience && !!form.weeklyFrequency && form.trainingDays.length >= 1;
-    if (step === 3) return !!form.goal && (form.goal !== "Outro" || form.goalOtherText.trim().length >= 3);
+    if (step === 2) return !!form.experience && !!form.weeklyFrequency && form.trainingDays.length >= 1 && !twoKBlocked;
+    if (step === 3) return !!form.goal && (form.goal !== "Outro" || form.goalOtherText.trim().length >= 3) && !twoKBlocked;
     return true;
   };
 
@@ -327,15 +361,16 @@ export default function OnboardingPage() {
               <div style={{ display: "flex", gap: 8, justifyContent: "space-between" }}>
                 {[{ d: 1, label: "Seg" },{ d: 2, label: "Ter" },{ d: 3, label: "Qua" },{ d: 4, label: "Qui" },{ d: 5, label: "Sex" },{ d: 6, label: "Sáb" },{ d: 0, label: "Dom" }].map(({ d, label }) => {
                   const selected = form.trainingDays.includes(d);
+                  const dayBlocked = !selected && twoKAtLimit;
                   return (
-                    <button key={d} onClick={() => toggleDay(d)} style={{
+                    <button key={d} onClick={() => toggleDay(d)} disabled={dayBlocked} style={{
                       flex: 1, padding: "12px 0", borderRadius: 12,
                       border: `1.5px solid ${selected ? "var(--terra)" : "var(--border2)"}`,
                       background: selected ? "rgba(196,98,45,0.15)" : "var(--surface2)",
                       color: selected ? "var(--terra-lite)" : "var(--muted)",
                       fontFamily: "'Sora', sans-serif",
                       fontWeight: selected ? 700 : 500, fontSize: "0.78rem",
-                      cursor: "pointer", transition: "all 0.18s",
+                      cursor: dayBlocked ? "not-allowed" : "pointer", opacity: dayBlocked ? 0.4 : 1, transition: "all 0.18s",
                       WebkitTapHighlightColor: "transparent",
                     } as React.CSSProperties}>
                       {label}
@@ -348,6 +383,7 @@ export default function OnboardingPage() {
                   {form.trainingDays.length} dia{form.trainingDays.length > 1 ? "s" : ""} selecionado{form.trainingDays.length > 1 ? "s" : ""}
                 </p>
               )}
+              {twoKNoticeEl}
             </div>
           )}
 
@@ -368,6 +404,8 @@ export default function OnboardingPage() {
                   </button>
                 ))}
               </div>
+
+              {twoKNoticeEl}
 
               {/* Campo livre para "Outro" */}
               {form.goal === "Outro" && (
