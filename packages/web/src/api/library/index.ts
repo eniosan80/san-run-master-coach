@@ -16,3 +16,4 @@ export type {
 
 export { PROGRAM_2K_CONTINUOUS } from "./programs/2K_CONTINUOUS";
 export { PROGRAM_2K_CONTINUOUS_2X } from "./programs/2K_CONTINUOUS_2X";
+export { select2KProgram } from "./selection";
