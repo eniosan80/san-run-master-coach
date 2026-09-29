@@ -5,6 +5,11 @@
 // WorkoutBlock legado de `api/lib/classify.ts` nem os tipos do PrescriptionEngine.
 // ============================================================================
 
+/** IDs dos programas oficiais da biblioteca. */
+export type ProgramId =
+  | "2K_CONTINUOUS"
+  | "2K_CONTINUOUS_2X";
+
 /** Tipos de sessão permitidos. */
 export type SessionType =
   | "run_walk"
@@ -77,10 +82,8 @@ export type CompletionCriteria =
 /** Uma sessão de treino do programa. */
 export type TrainingSession = {
   id: string;
-  programId: "2K_CONTINUOUS";
-  /** Semana do programa (1–7). */
+  programId: ProgramId;
   week: number;
-  /** Posição da sessão dentro da semana (1–3). */
   sessionNumber: 1 | 2 | 3;
   title: string;
   type: SessionType;
@@ -99,11 +102,11 @@ export type TrainingSession = {
 
 /** Programa de treino oficial. */
 export type TrainingProgram = {
-  id: "2K_CONTINUOUS";
-  name: "Correr 2 km ou 15 minutos sem caminhar";
-  weeks: 7;
-  sessionsPerWeek: 3;
-  totalSessions: 21;
+  id: ProgramId;
+  name: string;
+  weeks: number;
+  sessionsPerWeek: number;
+  totalSessions: number;
   recommendedFor: ["never_ran"];
   nextProgression: null;
   sessions: TrainingSession[];
